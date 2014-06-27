@@ -12,11 +12,11 @@
 
     "repository": {
         "type": "git",
-        "url": ""
+        "url": "https://github.com/MathiasPaumgarten/grunt-json-bake.git"
     },
 
     "bugs": {
-        "url": ""
+        "url": "https://github.com/MathiasPaumgarten/grunt-json-bake/issues"
     },
 
     "licenses": [
