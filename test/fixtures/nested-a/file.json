@@ -1,0 +1,3 @@
+{
+    "keep-going": "{{nested-b/file.json}}"
+}
