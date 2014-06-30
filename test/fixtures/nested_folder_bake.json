@@ -1,0 +1,4 @@
+{
+    "foo": "{{multi}}",
+    "bar": "{{multi/layer}}"
+}

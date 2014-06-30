@@ -12,9 +12,11 @@ var fs = require( "fs" );
 
 module.exports = function( grunt ) {
 
-    var regex = /\"\{\{\s*([\/\.\-\w]*)\s*\}\}\"/g;
-
     grunt.registerMultiTask( "json_bake", "Baking multiple json files into one", function() {
+
+        var options = this.options( {
+            parsePattern: /\"\{\{\s*([\/\.\-\w]*)\s*\}\}\"/g
+        } );
 
         function checkFile( src ) {
             if ( ! grunt.file.exists( src ) ) {
@@ -33,6 +35,17 @@ module.exports = function( grunt ) {
             return segments.join( "/" );
         }
 
+        function isJSONFile( path ) {
+            if ( fs.statSync( path ).isFile() &&
+                path.split( "." ).pop().toLowerCase() === "json") return true;
+
+            return false;
+        }
+
+        function isDirectory( path ) {
+            return fs.statSync( path ).isDirectory();
+        }
+
         function formatJSON( content ) {
             try {
 
@@ -41,7 +54,7 @@ module.exports = function( grunt ) {
             } catch( error ) {
 
                 grunt.log.error( error );
-                return false;
+                return null;
 
             }
         }
@@ -50,27 +63,13 @@ module.exports = function( grunt ) {
             var content = grunt.file.read( path );
             var folderPath = getFolder( path );
 
-            return content.replace( regex, function( match, target ) {
+            return content.replace( options.parsePattern, function( match, target ) {
 
                 var fullPath = folderPath + "/" + target;
-                var isDirectory = fs.statSync( fullPath ).isDirectory();
 
-                if ( isDirectory ) {
+                if ( isDirectory( fullPath ) ) {
 
-                    var files = fs.readdirSync( fullPath );
-                    var parsedFiles = [];
-
-                    files.forEach( function( file ) {
-
-                        var filePath = fullPath + "/" + file;
-
-                        if ( ! fs.statSync( filePath ).isFile() ) return;
-
-                        parsedFiles.push( parse( filePath ) );
-
-                    } );
-
-                    return "[" + parsedFiles.join( "," ) + "]";
+                    return resolveDirectory( fullPath );
 
                 } else {
 
@@ -78,6 +77,30 @@ module.exports = function( grunt ) {
 
                 }
             } );
+        }
+
+        function resolveDirectory( path ) {
+            var files = fs.readdirSync( path );
+
+            return "[" + files
+
+                .map( function( file ) {
+
+                    var filePath = path + "/" + file;
+
+                    if ( isJSONFile( filePath ) ) return parse( filePath );
+                    else if ( isDirectory( filePath ) ) return resolveDirectory( filePath );
+
+                    return null;
+                } )
+
+                .filter( function( value ) {
+
+                    return value !== null;
+
+                } )
+
+                .join( "," ) + "]";
         }
 
         this.files.forEach( function( file ) {
@@ -89,7 +112,7 @@ module.exports = function( grunt ) {
 
             var destContent = formatJSON( parse( src ) );
 
-            if ( destContent === false ) {
+            if ( destContent === null ) {
                 grunt.log.error( "Could not write file \"" + dest + "\" because of JSON error." );
                 return;
             }

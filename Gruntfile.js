@@ -30,7 +30,8 @@ module.exports = function( grunt ) {
             bake: {
                 files: {
                     "tmp/simple_bake.json": "test/fixtures/simple_bake.json",
-                    "tmp/nested_bake.json": "test/fixtures/nested_bake.json"
+                    "tmp/nested_bake.json": "test/fixtures/nested_bake.json",
+                    "tmp/nested_folder_bake.json": "test/fixtures/nested_folder_bake.json"
                 }
             }
         },
@@ -42,7 +43,7 @@ module.exports = function( grunt ) {
         watch: {
             jshint: {
                 files: [ "tasks/**/*.js" ],
-                tasks: [ "jshint", "json_bake" ]
+                tasks: [ "jshint", "test" ]
             }
         }
 

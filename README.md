@@ -21,10 +21,12 @@ grunt.loadNpmTasks('grunt-json-bake');
 
 ### Overview
 This module allows you to merge multiple JSON files into one. I looks for a certain hooks like so `"key": "{{path/to/folder}}"`.
-All values are parsed and replaced. if the hook is a path to a JSON file, the hook will be replaced with the JSON file content.
+All values are parsed and replaced. If the hook is a path to a JSON file, the hook will be replaced with the JSON file content.
 If the hook is the path to a folder it will take all the JSON files in this folder and put them into an array.
 
-Includes can be nested. That means any JSON that you include will be recursively parsed a swell.
+Includes can be nested. That means any JSON that you include will be recursively parsed a swell. Also folders of JSON files can be nested. When
+a folder is turned into an array it parses the content of a folder for json files. If it comes upon an folder, this will be turned into an array
+and recursivly all the content will be travirsed for JSON files/folders.
 
 ```js
 grunt.initConfig( {
@@ -41,10 +43,16 @@ grunt.initConfig( {
 } );
 ```
 
+### Options
+
+#### options.parsePattern
+Type: `Regex`
+Default value: `/\"\{\{\s*([\/\.\-\w]*)\s*\}\}\"/g`
+
+This Regex is used to parse the JSON file for hooks. By default it looks for values such as `"{{path/goes/here}}"`. The first parenthesized substring of the regex will
+be used to determine the path.
+
 ### Usage Examples
-
-This is a simple explanation
-
 
 Given the following folder structure:
 
@@ -107,6 +115,3 @@ This would generate a new json from `base.json`:
 
 ## Contributing
 In lieu of a formal style guide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
-
-## Release History
-_(Nothing yet)_
