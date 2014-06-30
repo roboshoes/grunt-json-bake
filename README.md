@@ -52,6 +52,12 @@ Default value: `/\"\{\{\s*([\/\.\-\w]*)\s*\}\}\"/g`
 This Regex is used to parse the JSON file for hooks. By default it looks for values such as `"{{path/goes/here}}"`. The first parenthesized substring of the regex will
 be used to determine the path.
 
+#### options.stripComments
+Type: `Boolean`
+Default value: `false`
+
+If this is set to `true` it will remove every key-value pair that has the key `"{{comment}}"`.
+
 ### Usage Examples
 
 Given the following folder structure:

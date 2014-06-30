@@ -1,0 +1,6 @@
+{
+    "comment": "This should stay",
+    "{{comment}}": "This should be gone",
+    "collection": "{{folder}}",
+    "folder": "{{comment}}"
+}

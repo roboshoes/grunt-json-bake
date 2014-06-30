@@ -10,7 +10,8 @@ exports.bake = {
         var files = {
             "tmp/simple_bake.json": "test/expected/simple_bake.json",
             "tmp/nested_bake.json": "test/expected/nested_bake.json",
-            "tmp/nested_folder_bake.json": "test/expected/nested_folder_bake.json"
+            "tmp/nested_folder_bake.json": "test/expected/nested_folder_bake.json",
+            "tmp/comment_bake.json": "test/expected/comment_bake.json"
         };
 
         test.expect( mout.object.size( files ) );

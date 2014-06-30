@@ -1,0 +1,22 @@
+{
+	"comment": "This should stay",
+	"collection": [
+		{
+			"name": "foo",
+			"value": "bar"
+		},
+		{
+			"name": "1",
+			"value": "2"
+		},
+		{
+			"name": true,
+			"value": false
+		}
+	],
+	"folder": [
+		{
+			"foo": "bar"
+		}
+	]
+}

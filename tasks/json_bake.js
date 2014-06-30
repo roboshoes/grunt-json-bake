@@ -15,7 +15,8 @@ module.exports = function( grunt ) {
     grunt.registerMultiTask( "json_bake", "Baking multiple json files into one", function() {
 
         var options = this.options( {
-            parsePattern: /\"\{\{\s*([\/\.\-\w]*)\s*\}\}\"/g
+            stripComments: false,
+            parsePattern: /\:\s*\"\{\{\s*([\/\.\-\w]*)\s*\}\}\"/g
         } );
 
         function checkFile( src ) {
@@ -46,10 +47,25 @@ module.exports = function( grunt ) {
             return fs.statSync( path ).isDirectory();
         }
 
-        function formatJSON( content ) {
+        function postProcess( content ) {
             try {
 
-                return JSON.stringify( JSON.parse( content ), null, "\t" );
+                var json;
+
+                if ( options.stripComments ) {
+
+                    json = JSON.parse( content, function( key, value ) {
+                        if ( key === "{{comment}}" ) return undefined;
+                        return value;
+                    } );
+
+                } else {
+
+                    json = JSON.parse( content );
+
+                }
+
+                return JSON.stringify( json, null, "\t" );
 
             } catch( error ) {
 
@@ -69,11 +85,11 @@ module.exports = function( grunt ) {
 
                 if ( isDirectory( fullPath ) ) {
 
-                    return resolveDirectory( fullPath );
+                    return ":" + resolveDirectory( fullPath );
 
                 } else {
 
-                    return parse( fullPath );
+                    return ":" + parse( fullPath );
 
                 }
             } );
@@ -110,7 +126,7 @@ module.exports = function( grunt ) {
 
             if ( ! checkFile( src ) ) return;
 
-            var destContent = formatJSON( parse( src ) );
+            var destContent = postProcess( parse( src ) );
 
             if ( destContent === null ) {
                 grunt.log.error( "Could not write file \"" + dest + "\" because of JSON error." );

@@ -33,6 +33,16 @@ module.exports = function( grunt ) {
                     "tmp/nested_bake.json": "test/fixtures/nested_bake.json",
                     "tmp/nested_folder_bake.json": "test/fixtures/nested_folder_bake.json"
                 }
+            },
+
+            comment: {
+                options: {
+                    stripComments: true
+                },
+
+                files: {
+                    "tmp/comment_bake.json": "test/fixtures/comment_bake.json"
+                }
             }
         },
 
