@@ -1,7 +1,7 @@
 {
     "name": "grunt-json-bake",
     "description": "Baking multiple json files into one",
-    "version": "0.2.0",
+    "version": "0.2.2",
     "homepage": "https://github.com/MathiasPaumgarten/grunt-json-bake",
 
     "author": {

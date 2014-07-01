@@ -60,6 +60,8 @@ If this is set to `true` it will remove every key-value pair that has the key `"
 
 ### Usage Examples
 
+#### Recursive Bake including files and folders
+
 Given the following folder structure:
 
 ```
@@ -118,6 +120,44 @@ This would generate a new json from `base.json`:
 ```
 
 `"books"` will be an array of the content of each of the JSON files in the book folder.
+
+#### Removing comment lines
+
+Make sure to turn it on in the `Gruntfile.js`:
+
+```js
+grunt.initConfig( {
+    json_bake: {
+        options: {
+            stripComments: true
+        },
+
+        your_target: {
+            // multiple files in a key value pair
+            // the key is the destination and
+            // the value is the root of the parsable
+
+            "generated.json": "base.json"
+        }
+    }
+} );
+```
+
+In your _base.json_ you can now add comments like so:
+
+```json
+{
+    "{{comment}}": "This is a list of people",
+    "authors": [ "John", "Mike", "Susan" ]
+}
+```
+
+This will generate _generated.json_:
+```json
+{
+    "authors": [ "John", "Mike", "Susan" ]
+}
+```
 
 ## Contributing
 In lieu of a formal style guide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
