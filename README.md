@@ -47,10 +47,10 @@ grunt.initConfig( {
 
 #### options.parsePattern
 Type: `Regex`
-Default value: `/\"\{\{\s*([\/\.\-\w]*)\s*\}\}\"/g`
+Default value: `/\{\{\s*([\/\.\-\w]*)\s*\}\}/`
 
-This Regex is used to parse the JSON file for hooks. By default it looks for values such as `"{{path/goes/here}}"`. The first parenthesized substring of the regex will
-be used to determine the path.
+This Regex is used to parse every value of all key-value-pairs. If the value has a formet like `{{path/to/something}}` it is resolved and parsed as well.
+The path is relative to that file and can point to a folder or a file.
 
 #### options.stripComments
 Type: `Boolean`

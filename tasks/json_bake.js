@@ -14,10 +14,15 @@ module.exports = function( grunt ) {
 
     grunt.registerMultiTask( "json_bake", "Baking multiple json files into one", function() {
 
+        // Merge user options with default options
+
         var options = this.options( {
             stripComments: false,
-            parsePattern: /\:\s*\"\{\{\s*([\/\.\-\w]*)\s*\}\}\"/g
+            parsePattern: /\{\{\s*([\/\.\-\w]*)\s*\}\}/
         } );
+
+
+        // Returns true if source points to a file
 
         function checkFile( src ) {
             if ( ! grunt.file.exists( src ) ) {
@@ -28,6 +33,9 @@ module.exports = function( grunt ) {
             return true;
         }
 
+
+        // Helper to retrieve the folder path of a file path
+
         function getFolder( path ) {
             var segments = path.split( "/" );
 
@@ -36,6 +44,9 @@ module.exports = function( grunt ) {
             return segments.join( "/" );
         }
 
+
+        // Returns true if the path given points at a JSON file
+
         function isJSONFile( path ) {
             if ( fs.statSync( path ).isFile() &&
                 path.split( "." ).pop().toLowerCase() === "json") return true;
@@ -43,69 +54,51 @@ module.exports = function( grunt ) {
             return false;
         }
 
+
+        // Returns true if the path points to a directory
+
         function isDirectory( path ) {
             return fs.statSync( path ).isDirectory();
         }
 
-        function postProcess( content ) {
-            try {
 
-                var json;
+        // Parses a JSON file and returns value as object
 
-                if ( options.stripComments ) {
-
-                    json = JSON.parse( content, function( key, value ) {
-                        if ( key === "{{comment}}" ) return undefined;
-                        return value;
-                    } );
-
-                } else {
-
-                    json = JSON.parse( content );
-
-                }
-
-                return JSON.stringify( json, null, "\t" );
-
-            } catch( error ) {
-
-                grunt.log.error( error );
-                return null;
-
-            }
-        }
-
-        function parse( path ) {
-            var content = grunt.file.read( path );
+        function parseFile( path ) {
             var folderPath = getFolder( path );
+            var content = grunt.file.read( path );
 
-            return content.replace( options.parsePattern, function( match, target ) {
+            return JSON.parse( content, function( key, value ) {
 
-                var fullPath = folderPath + "/" + target;
+                if ( options.stripComments && key === "{{comment}}" ) return undefined;
 
-                if ( isDirectory( fullPath ) ) {
+                var match = ( typeof value === "string" ) ? value.match( options.parsePattern ) : null;
 
-                    return ":" + resolveDirectory( fullPath );
+                if ( match ) {
+                    var fullPath = folderPath + "/" + match[ 1 ];
 
-                } else {
-
-                    return ":" + parse( fullPath );
-
+                    return isDirectory( fullPath ) ? parseDirectory( fullPath ) : parseFile( fullPath );
                 }
+
+                return value;
+
             } );
+
         }
 
-        function resolveDirectory( path ) {
-            var files = fs.readdirSync( path );
 
-            return "[" + files
+        // Parses a directory and returns content as array
+
+        function parseDirectory( path ) {
+
+            return fs.readdirSync( path )
 
                 .map( function( file ) {
 
                     var filePath = path + "/" + file;
 
-                    if ( isJSONFile( filePath ) ) return parse( filePath );
-                    else if ( isDirectory( filePath ) ) return resolveDirectory( filePath );
+                    if ( isJSONFile( filePath ) ) return parseFile( filePath );
+                    else if ( isDirectory( filePath ) ) return parseDirectory( filePath );
 
                     return null;
                 } )
@@ -114,10 +107,11 @@ module.exports = function( grunt ) {
 
                     return value !== null;
 
-                } )
-
-                .join( "," ) + "]";
+                } );
         }
+
+
+        // Loop over all files given in config and parse them
 
         this.files.forEach( function( file ) {
 
@@ -126,12 +120,7 @@ module.exports = function( grunt ) {
 
             if ( ! checkFile( src ) ) return;
 
-            var destContent = postProcess( parse( src ) );
-
-            if ( destContent === null ) {
-                grunt.log.error( "Could not write file \"" + dest + "\" because of JSON error." );
-                return;
-            }
+            var destContent = JSON.stringify( parseFile( src ), null, "\t" );
 
             grunt.file.write( dest, destContent );
             grunt.log.ok( "File \"" + dest + "\" created." );
