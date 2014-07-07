@@ -1,4 +1,4 @@
-# grunt-json-bake
+# grunt-json-bake [![Build Status](https://travis-ci.org/MathiasPaumgarten/grunt-json-bake.png?branch=master)](https://travis-ci.org/MathiasPaumgarten/grunt-json-bake)
 
 > Baking multiple json files into one
 
