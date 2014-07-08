@@ -1,0 +1,20 @@
+{
+  "value": {
+    "name": "foo",
+    "value": "bar"
+  },
+  "collection": [
+    {
+      "name": "foo",
+      "value": "bar"
+    },
+    {
+      "name": "1",
+      "value": "2"
+    },
+    {
+      "name": true,
+      "value": false
+    }
+  ]
+}

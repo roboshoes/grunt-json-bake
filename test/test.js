@@ -11,7 +11,9 @@ exports.bake = {
             "tmp/simple_bake.json": "test/expected/simple_bake.json",
             "tmp/nested_bake.json": "test/expected/nested_bake.json",
             "tmp/nested_folder_bake.json": "test/expected/nested_folder_bake.json",
-            "tmp/comment_bake.json": "test/expected/comment_bake.json"
+            "tmp/comment_bake.json": "test/expected/comment_bake.json",
+            "tmp/minified.json": "test/expected/minified.json",
+            "tmp/small_indentation.json": "test/expected/small_indentation.json"
         };
 
         test.expect( mout.object.size( files ) );

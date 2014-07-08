@@ -58,6 +58,13 @@ Default value: `false`
 
 If this is set to `true` it will remove every key-value pair that has the key `"{{comment}}"`.
 
+#### options.indentation
+Type: `String`
+Default value: `"/t"`
+
+This defines the amount of indentation of the JSON being generated. Setting this to `null` will produce a minfied version.
+To get what NPM uses as a default use two spaces: `"  "`.
+
 ### Usage Examples
 
 #### Recursive Bake including files and folders
@@ -133,10 +140,6 @@ grunt.initConfig( {
         },
 
         your_target: {
-            // multiple files in a key value pair
-            // the key is the destination and
-            // the value is the root of the parsable
-
             "generated.json": "base.json"
         }
     }

@@ -10,7 +10,7 @@
 
 module.exports = function( grunt ) {
 
-    grunt.initConfig({
+    grunt.initConfig( {
         jshint: {
             all: [
                 "Gruntfile.js",
@@ -43,6 +43,26 @@ module.exports = function( grunt ) {
                 files: {
                     "tmp/comment_bake.json": "test/fixtures/comment_bake.json"
                 }
+            },
+
+            minified: {
+                options: {
+                    indentation: null
+                },
+
+                files: {
+                    "tmp/minified.json": "test/fixtures/simple_bake.json"
+                }
+            },
+
+            small_intention: {
+                options: {
+                    indentation: "  "
+                },
+
+                files: {
+                    "tmp/small_indentation.json": "test/fixtures/simple_bake.json"
+                }
             }
         },
 
@@ -57,7 +77,7 @@ module.exports = function( grunt ) {
             }
         }
 
-    });
+    } );
 
     grunt.loadTasks( "tasks" );
 
@@ -67,7 +87,6 @@ module.exports = function( grunt ) {
     grunt.loadNpmTasks( "grunt-contrib-watch" );
 
     grunt.registerTask( "test", [ "clean", "json_bake", "nodeunit" ] );
-
-    grunt.registerTask( "default", [" jshint", "test" ] );
+    grunt.registerTask( "default", [ "jshint", "test" ] );
 
 };

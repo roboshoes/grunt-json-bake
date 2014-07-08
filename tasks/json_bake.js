@@ -18,15 +18,16 @@ module.exports = function( grunt ) {
 
         var options = this.options( {
             stripComments: false,
+            indentation: "\t",
             parsePattern: /\{\{\s*([\/\.\-\w]*)\s*\}\}/
         } );
 
 
         // Returns true if source points to a file
 
-        function checkFile( src ) {
-            if ( ! grunt.file.exists( src ) ) {
-                grunt.log.error( "Source file \"" + src + "\" not found." );
+        function checkFile( path ) {
+            if ( ! grunt.file.exists( path ) ) {
+                grunt.log.error( "Source file \"" + path + "\" not found." );
                 return false;
             }
 
@@ -120,7 +121,7 @@ module.exports = function( grunt ) {
 
             if ( ! checkFile( src ) ) return;
 
-            var destContent = JSON.stringify( parseFile( src ), null, "\t" );
+            var destContent = JSON.stringify( parseFile( src ), null, options.indentation );
 
             grunt.file.write( dest, destContent );
             grunt.log.ok( "File \"" + dest + "\" created." );
