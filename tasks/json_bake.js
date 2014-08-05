@@ -66,7 +66,7 @@ module.exports = function( grunt ) {
         // Parses a JSON file and returns value as object
 
         function parseFile( path ) {
-            var folderPath = getFolder( path );
+            var folderPath = getFolder( path ) || ".";
             var content = grunt.file.read( path );
 
             return JSON.parse( content, function( key, value ) {

@@ -33,11 +33,14 @@ grunt.initConfig( {
     json_bake: {
 
         your_target: {
+            options: {},
+
             // multiple files in a key value pair
             // the key is the destination and
             // the value is the root of the parsable
-
-            "dist/final.json": "app/base.json"
+            files: {
+                "dist/final.json": "app/base.json"
+            }
         }
     }
 } );
