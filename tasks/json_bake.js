@@ -14,7 +14,7 @@ module.exports = function( grunt ) {
 
     grunt.registerMultiTask( "json_bake", "Baking multiple json files into one", function() {
 
-        // Merge user options with default options
+        // Merge user options with default options, without defIncludeFiles
 
         var options = this.options( {
             stripComments: false,
@@ -22,11 +22,62 @@ module.exports = function( grunt ) {
             parsePattern: /\{\{\s*([\/\.\-\w]*)\s*\}\}/
         } );
 
+        var RESULTTYPE = {
+            STRING: "string",
+            JSON: "json"
+        };
+
+        var defIncludeFiles = {
+            json: { resultType: RESULTTYPE.JSON},
+            html: { resultType: RESULTTYPE.STRING, separator: ""  },
+            csv: { resultType: RESULTTYPE.STRING, separator: ";"  }
+        };
+
+        // Merge user and default includeFiles
+        // won't be needed in Grunt 0.5.0: https://github.com/gruntjs/grunt/issues/738
+
+        if ( ! options.includeFiles ) {
+            options.includeFiles = defIncludeFiles;
+
+        } else {
+            Object.keys( defIncludeFiles ).forEach( function( defFileExtension ) {
+                var optionsFileExtObj = options.includeFiles[defFileExtension];
+                if ( optionsFileExtObj ) {
+                    var defFileExtObj = defIncludeFiles[defFileExtension];
+                    Object.keys( defFileExtObj ).forEach( function( defFileExtObjKey ) {
+                        if ( ! optionsFileExtObj[defFileExtObjKey] ) {
+                            optionsFileExtObj[defFileExtObjKey] = defIncludeFiles[defFileExtension][defFileExtObjKey];
+                        }
+                    } );
+                } else {
+                    options.includeFiles[defFileExtension] = defIncludeFiles[defFileExtension];
+                }
+            } );
+        }
+
+
+        // Returns array of the file extensions of files that can be included
+
+        function getIncludeFileExtensions() {
+            return Object.keys( options.includeFiles );
+        }
+
+
+        // Returns the file extenstion or empty string if there is no extension
+
+        function getFileExtension( path ) {
+            var lastDotIndex = path.lastIndexOf( "." );
+            if ( lastDotIndex !== - 1 ) {
+                return path.substring( lastDotIndex + 1 );
+            }
+            return "";
+        }
+
 
         // Returns true if source points to a file
 
         function checkFile( path ) {
-            if ( ! grunt.file.exists( path ) ) {
+            if ( typeof path === 'undefined' || ! grunt.file.exists( path ) ) {
                 grunt.log.error( "Source file \"" + path + "\" not found." );
                 return false;
             }
@@ -39,18 +90,16 @@ module.exports = function( grunt ) {
 
         function getFolder( path ) {
             var segments = path.split( "/" );
-
             segments.pop();
-
             return segments.join( "/" );
         }
 
 
         // Returns true if the path given points at a JSON file
 
-        function isJSONFile( path ) {
+        function isIncludeFile( path ) {
             if ( fs.statSync( path ).isFile() &&
-                path.split( "." ).pop().toLowerCase() === "json") return true;
+                getIncludeFileExtensions().indexOf( getFileExtension( path ) ) !== - 1 ) return true;
 
             return false;
         }
@@ -63,11 +112,46 @@ module.exports = function( grunt ) {
         }
 
 
+        function parseFile( path ) {
+
+            var fileExt = getFileExtension( path );
+            if ( fileExt ) {
+
+                var extensionFound = false;
+                var parsedResult = null;
+                getIncludeFileExtensions().forEach( function( includeFileExt ) {
+                    if ( ! extensionFound ) {
+                        if ( fileExt === includeFileExt ) {
+                            extensionFound = true;
+
+                            var content = grunt.file.read( path );
+                            var resultType = options.includeFiles[includeFileExt]['resultType'];
+                            if ( resultType === RESULTTYPE.JSON ) {
+                                parsedResult = parseJSON( path, content );
+                            }
+                            else if ( resultType === RESULTTYPE.STRING ) {
+                                var separator = options.includeFiles[includeFileExt]['separator'];
+                                parsedResult = parseString( content, separator );
+                            }
+                        }
+                    }
+                } );
+
+                if ( ! extensionFound ) {
+                    return undefined;
+                } else {
+                    return parsedResult;
+                }
+            }
+
+            // skip, the file does not have an extension
+            return undefined;
+        }
+
+
         // Parses a JSON file and returns value as object
 
-        function parseFile( path ) {
-            var folderPath = getFolder( path ) || ".";
-            var content = grunt.file.read( path );
+        function parseJSON( path, content ) {
 
             return JSON.parse( content, function( key, value ) {
 
@@ -76,6 +160,7 @@ module.exports = function( grunt ) {
                 var match = ( typeof value === "string" ) ? value.match( options.parsePattern ) : null;
 
                 if ( match ) {
+                    var folderPath = getFolder( path ) || ".";
                     var fullPath = folderPath + "/" + match[ 1 ];
 
                     return isDirectory( fullPath ) ? parseDirectory( fullPath ) : parseFile( fullPath );
@@ -84,7 +169,13 @@ module.exports = function( grunt ) {
                 return value;
 
             } );
+        }
 
+
+        // Parses a text file and returns value as object
+
+        function parseString( content, separator ) {
+            return content.replace( /"/g, "\"" ).replace( /\n/g, separator );
         }
 
 
@@ -98,7 +189,7 @@ module.exports = function( grunt ) {
 
                     var filePath = path + "/" + file;
 
-                    if ( isJSONFile( filePath ) ) return parseFile( filePath );
+                    if ( isIncludeFile( filePath ) ) return parseFile( filePath );
                     else if ( isDirectory( filePath ) ) return parseDirectory( filePath );
 
                     return null;

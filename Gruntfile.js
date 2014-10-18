@@ -35,6 +35,25 @@ module.exports = function( grunt ) {
                 }
             },
 
+            bakeHtml: {
+                files: {
+                    "tmp/simple_html_bake.json": "test/fixtures/simple_html_bake.json",
+                    "tmp/simple_html_multiline_bake.json": "test/fixtures/simple_html_multiline_bake.json",
+                    "tmp/nested_html_bake.json": "test/fixtures/nested_html_bake.json"
+                }
+            },
+
+            bakeHtmlSeparator: {
+                options: {
+                    includeFiles: {
+                        html: { separator: "__"  }
+                    }
+                },
+                files: {
+                    "tmp/simple_html_multiline_separator_bake.json": "test/fixtures/simple_html_multiline_bake.json"
+                }
+            },
+
             comment: {
                 options: {
                     stripComments: true

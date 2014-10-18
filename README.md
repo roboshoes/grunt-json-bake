@@ -20,9 +20,9 @@ grunt.loadNpmTasks('grunt-json-bake');
 ## The "json_bake" task
 
 ### Overview
-This module allows you to merge multiple JSON files into one. I looks for a certain hooks like so `"key": "{{path/to/folder}}"`.
+This module allows you to merge multiple JSON files into one. It looks for a certain hooks like so `"key": "{{path/to/folder}}"`.
 All values are parsed and replaced. If the hook is a path to a JSON file, the hook will be replaced with the JSON file content.
-If the hook is the path to a folder it will take all the JSON files in this folder and put them into an array.
+If the hook is a path to a another file allowed to be inclued, the hook will be replaced with the file content. If the hook is the path to a folder it will take all the JSON files in this folder and put them into an array.
 
 Includes can be nested. That means any JSON that you include will be recursively parsed a swell. Also folders of JSON files can be nested. When
 a folder is turned into an array it parses the content of a folder for json files. If it comes upon an folder, this will be turned into an array
@@ -68,6 +68,25 @@ Default value: `"/t"`
 This defines the amount of indentation of the JSON being generated. Setting this to `null` will produce a minfied version.
 To get what NPM uses as a default use two spaces: `"  "`.
 
+
+#### options.includeFiles
+Type: `Object` with keys and values. See the default values below.
+
+```javascript
+includeFiles: {
+    json: { resultType: "json"},
+    html: { resultType: "string", separator: ""  },
+    csv: { resultType: "string", separator: ";"  }
+}
+```
+
+The keys of `includeFiles` define the extensions of the files that can be included with `{{filename.ext}}`.
+The `resultType` can have the values `json` or `string`.
+If the `resultType` is `json`, then the file is included as a parsed JSON object.
+If the `resultType` is `string`, then the file content is included as a string.
+If the file content consists of multiple lines you can define the `separator` to connect the lines. 
+
+
 ### Usage Examples
 
 #### Recursive Bake including files and folders
@@ -85,6 +104,7 @@ includes
 ```
 
 This is the `base.json`:
+
 ```json
 {
     "author": "{{includes/author.json}}",

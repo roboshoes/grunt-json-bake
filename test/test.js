@@ -13,7 +13,11 @@ exports.bake = {
             "tmp/nested_folder_bake.json": "test/expected/nested_folder_bake.json",
             "tmp/comment_bake.json": "test/expected/comment_bake.json",
             "tmp/minified.json": "test/expected/minified.json",
-            "tmp/small_indentation.json": "test/expected/small_indentation.json"
+            "tmp/small_indentation.json": "test/expected/small_indentation.json",
+            "tmp/simple_html_bake.json": "test/expected/simple_html_bake.json",
+            "tmp/simple_html_multiline_bake.json": "test/expected/simple_html_multiline_bake.json",
+            "tmp/simple_html_multiline_separator_bake.json": "test/expected/simple_html_multiline_separator_bake.json",
+            "tmp/nested_html_bake.json": "test/expected/nested_html_bake.json"
         };
 
         test.expect( mout.object.size( files ) );
