@@ -14,7 +14,7 @@ module.exports = function( grunt ) {
 
     grunt.registerMultiTask( "json_bake", "Baking multiple json files into one", function() {
 
-        // Merge user options with default options, without defIncludeFiles
+        // Merge user options with default options, without defaultIncludeFiles
 
         var options = this.options( {
             stripComments: false,
@@ -27,7 +27,7 @@ module.exports = function( grunt ) {
             JSON: "json"
         };
 
-        var defIncludeFiles = {
+        var defaultIncludeFiles = {
             json: { resultType: RESULTTYPE.JSON},
             html: { resultType: RESULTTYPE.STRING, separator: ""  },
             csv: { resultType: RESULTTYPE.STRING, separator: ";"  }
@@ -37,20 +37,20 @@ module.exports = function( grunt ) {
         // won't be needed in Grunt 0.5.0: https://github.com/gruntjs/grunt/issues/738
 
         if ( ! options.includeFiles ) {
-            options.includeFiles = defIncludeFiles;
+            options.includeFiles = defaultIncludeFiles;
 
         } else {
-            Object.keys( defIncludeFiles ).forEach( function( defFileExtension ) {
-                var optionsFileExtObj = options.includeFiles[defFileExtension];
+            Object.keys( defaultIncludeFiles ).forEach( function( defaultFileExtension ) {
+                var optionsFileExtObj = options.includeFiles[ defaultFileExtension ];
                 if ( optionsFileExtObj ) {
-                    var defFileExtObj = defIncludeFiles[defFileExtension];
-                    Object.keys( defFileExtObj ).forEach( function( defFileExtObjKey ) {
-                        if ( ! optionsFileExtObj[defFileExtObjKey] ) {
-                            optionsFileExtObj[defFileExtObjKey] = defIncludeFiles[defFileExtension][defFileExtObjKey];
+                    var defFileExtObj = defaultIncludeFiles[ defaultFileExtension ];
+                    Object.keys( defFileExtObj ).forEach( function( defaultFileExtensionObjectKey ) {
+                        if ( ! optionsFileExtObj[ defaultFileExtensionObjectKey ] ) {
+                            optionsFileExtObj[ defaultFileExtensionObjectKey ] = defaultIncludeFiles[ defaultFileExtension ][ defaultFileExtensionObjectKey ];
                         }
                     } );
                 } else {
-                    options.includeFiles[defFileExtension] = defIncludeFiles[defFileExtension];
+                    options.includeFiles[ defaultFileExtension ] = defaultIncludeFiles[ defaultFileExtension ];
                 }
             } );
         }
@@ -66,10 +66,11 @@ module.exports = function( grunt ) {
         // Returns the file extenstion or empty string if there is no extension
 
         function getFileExtension( path ) {
-            var lastDotIndex = path.lastIndexOf( "." );
-            if ( lastDotIndex !== - 1 ) {
-                return path.substring( lastDotIndex + 1 );
+
+            if ( path.indexOf( "." ) > -1 ) {
+                return path.split( "." ).pop();
             }
+
             return "";
         }
 
@@ -77,7 +78,7 @@ module.exports = function( grunt ) {
         // Returns true if source points to a file
 
         function checkFile( path ) {
-            if ( typeof path === 'undefined' || ! grunt.file.exists( path ) ) {
+            if ( typeof path === "undefined" || ! grunt.file.exists( path ) ) {
                 grunt.log.error( "Source file \"" + path + "\" not found." );
                 return false;
             }
@@ -95,7 +96,7 @@ module.exports = function( grunt ) {
         }
 
 
-        // Returns true if the path given points at a JSON file
+        // Returns true if the path given points at a JSON file or accepted include file
 
         function isIncludeFile( path ) {
             if ( fs.statSync( path ).isFile() &&
@@ -114,37 +115,40 @@ module.exports = function( grunt ) {
 
         function parseFile( path ) {
 
-            var fileExt = getFileExtension( path );
-            if ( fileExt ) {
+            var fileExtension = getFileExtension( path );
+
+            if ( fileExtension ) {
 
                 var extensionFound = false;
                 var parsedResult = null;
+
                 getIncludeFileExtensions().forEach( function( includeFileExt ) {
                     if ( ! extensionFound ) {
-                        if ( fileExt === includeFileExt ) {
+
+                        if ( fileExtension === includeFileExt ) {
                             extensionFound = true;
 
                             var content = grunt.file.read( path );
-                            var resultType = options.includeFiles[includeFileExt]['resultType'];
+                            var resultType = options.includeFiles[ includeFileExt ][ "resultType" ];
+
                             if ( resultType === RESULTTYPE.JSON ) {
+
                                 parsedResult = parseJSON( path, content );
-                            }
-                            else if ( resultType === RESULTTYPE.STRING ) {
-                                var separator = options.includeFiles[includeFileExt]['separator'];
+
+                            } else if ( resultType === RESULTTYPE.STRING ) {
+
+                                var separator = options.includeFiles[ includeFileExt ][ "separator" ];
                                 parsedResult = parseString( content, separator );
+
                             }
                         }
                     }
                 } );
 
-                if ( ! extensionFound ) {
-                    return undefined;
-                } else {
-                    return parsedResult;
-                }
+                if ( ! extensionFound ) return undefined;
+                else return parsedResult;
             }
 
-            // skip, the file does not have an extension
             return undefined;
         }
 
