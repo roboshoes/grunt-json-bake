@@ -86,6 +86,12 @@ If the `resultType` is `json`, then the file is included as a parsed JSON object
 If the `resultType` is `string`, then the file content is included as a string.
 If the file content consists of multiple lines you can define the `separator` to connect the lines. 
 
+#### options.variables
+Type: `Object` with keys and values.
+Default value: `"{}"` (empty object).
+
+This is used to define variables that will be replaced by their corresponding values.
+The variables can be used anywhere in the json file(s), by wrapping the variable name with "@".
 
 ### Usage Examples
 
@@ -182,6 +188,87 @@ This will generate _generated.json_:
 ```json
 {
     "authors": [ "John", "Mike", "Susan" ]
+}
+```
+
+
+#### Using variables
+
+Define the targets and variables in `Gruntfile.js`:
+
+```js
+grunt.initConfig( {
+    json_bake: {
+
+        production: {
+            options: {
+                variables: {
+                    "env" : "production"
+                }
+            },
+            files: {
+                "production.json": "base.json"
+            }
+        },
+        dev: {
+            options: {
+                variables: {
+                    "env" : "dev"
+                }
+            },
+            files: {
+               "dev.json": "base.json"
+            }
+        }
+    }
+} );
+```
+
+In your _base.json_ you can now use the defined variable like so:
+
+```json
+{
+    "credentials": "{{includes/@env@/credentials.json}}",
+}
+```
+
+With an `includes/production/credentials.json`:
+
+```json
+{
+    "username": "admin",
+    "database": "production_db"
+}
+```
+
+and `includes/dev/credentials.json`:
+
+```json
+{
+    "username": "admin",
+    "database": "dev_db"
+}
+```
+
+
+Running json_bake:dev will generate _dev.json_:
+```json
+{
+    "credentials": {
+        "username": "admin",
+        "database": "dev_db"
+    }
+}
+```
+
+
+And running json_bake:production will generate _production.json_:
+```json
+{
+    "credentials": {
+        "username": "admin",
+        "database": "production_db"
+    }
 }
 ```
 

@@ -19,7 +19,8 @@ module.exports = function( grunt ) {
         var options = this.options( {
             stripComments: false,
             indentation: "\t",
-            parsePattern: /\{\{\s*([\/\.\-\w]*)\s*\}\}/
+            parsePattern: /\{\{\s*([\/\.\-\w]*)\s*\}\}/,
+            variables: {}
         } );
 
         var RESULTTYPE = {
@@ -161,6 +162,12 @@ module.exports = function( grunt ) {
 
                 if ( options.stripComments && key === "{{comment}}" ) return undefined;
 
+                // Replace variables in their values
+
+                if ( Object.keys(options.variables).length && typeof value === "string") {
+                    value = replaceVariables(value);
+                }
+
                 var match = ( typeof value === "string" ) ? value.match( options.parsePattern ) : null;
 
                 if ( match ) {
@@ -173,6 +180,30 @@ module.exports = function( grunt ) {
                 return value;
 
             } );
+        }
+
+        // Replaces defined variables in the given value
+
+        function replaceVariables( value ) {
+            var pattern = /@(\w+)@/g,
+                match,
+                matchedVar,
+                replacement,
+                result = value;
+
+            // Find all variables in the value and replace them by their values
+
+            while (match = pattern.exec(value)) {
+                matchedVar = match[1];
+                replacement = options.variables[matchedVar];
+                if (!replacement) {
+                    grunt.log.warn("Variable " + matchedVar + " is undefined. Skipping replace");
+                    continue;
+                }
+
+                result = result.replace(match[0], replacement);
+            }
+            return result;
         }
 
 

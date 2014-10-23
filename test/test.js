@@ -17,7 +17,9 @@ exports.bake = {
             "tmp/simple_html_bake.json": "test/expected/simple_html_bake.json",
             "tmp/simple_html_multiline_bake.json": "test/expected/simple_html_multiline_bake.json",
             "tmp/simple_html_multiline_separator_bake.json": "test/expected/simple_html_multiline_separator_bake.json",
-            "tmp/nested_html_bake.json": "test/expected/nested_html_bake.json"
+            "tmp/nested_html_bake.json": "test/expected/nested_html_bake.json",
+            "tmp/variables1.json": "test/expected/variables1.json",
+            "tmp/variables2.json": "test/expected/variables2.json"
         };
 
         test.expect( mout.object.size( files ) );

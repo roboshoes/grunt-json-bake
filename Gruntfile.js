@@ -82,7 +82,33 @@ module.exports = function( grunt ) {
                 files: {
                     "tmp/small_indentation.json": "test/fixtures/simple_bake.json"
                 }
-            }
+            },
+
+            variables_1: {
+                options: {
+                    variables: {
+                        folder: "folder",
+                        num: 1
+                    }
+                },
+
+                files: {
+                    "tmp/variables1.json": "test/fixtures/variables.json"
+                }
+            },
+
+            variables_2: {
+                options: {
+                    variables: {
+                        folder: "folder",
+                        num: 2
+                    }
+                },
+
+                files: {
+                    "tmp/variables2.json": "test/fixtures/variables.json"
+                }
+            },
         },
 
         nodeunit: {
