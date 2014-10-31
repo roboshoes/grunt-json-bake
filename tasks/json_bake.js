@@ -20,7 +20,8 @@ module.exports = function( grunt ) {
             stripComments: false,
             indentation: "\t",
             parsePattern: /\{\{\s*([\/\.\-\w]*)\s*\}\}/,
-            variables: {}
+            variables: {},
+            variableRegex: /@(\w+)@/g
         } );
 
         var RESULTTYPE = {
@@ -164,8 +165,8 @@ module.exports = function( grunt ) {
 
                 // Replace variables in their values
 
-                if ( Object.keys(options.variables).length && typeof value === "string") {
-                    value = replaceVariables(value);
+                if ( Object.keys( options.variables ).length && typeof value === "string" ) {
+                    value = replaceVariables( value );
                 }
 
                 var match = ( typeof value === "string" ) ? value.match( options.parsePattern ) : null;
@@ -182,28 +183,21 @@ module.exports = function( grunt ) {
             } );
         }
 
+
         // Replaces defined variables in the given value
 
         function replaceVariables( value ) {
-            var pattern = /@(\w+)@/g,
-                match,
-                matchedVar,
-                replacement,
-                result = value;
 
-            // Find all variables in the value and replace them by their values
+            return value.replace( options.variableRegex, function( match, key ) {
 
-            while (match = pattern.exec(value)) {
-                matchedVar = match[1];
-                replacement = options.variables[matchedVar];
-                if (!replacement) {
-                    grunt.log.warn("Variable " + matchedVar + " is undefined. Skipping replace");
-                    continue;
+                if ( ! options.variables[ key ] ) {
+                    grunt.log.warn( "No variable definition found for: " + key );
+                    return "";
                 }
 
-                result = result.replace(match[0], replacement);
-            }
-            return result;
+                return options.variables[ key ];
+            } );
+
         }
 
 

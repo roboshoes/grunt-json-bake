@@ -84,14 +84,22 @@ The keys of `includeFiles` define the extensions of the files that can be includ
 The `resultType` can have the values `json` or `string`.
 If the `resultType` is `json`, then the file is included as a parsed JSON object.
 If the `resultType` is `string`, then the file content is included as a string.
-If the file content consists of multiple lines you can define the `separator` to connect the lines. 
+If the file content consists of multiple lines you can define the `separator` to connect the lines.
 
 #### options.variables
 Type: `Object` with keys and values.
 Default value: `"{}"` (empty object).
 
 This is used to define variables that will be replaced by their corresponding values.
-The variables can be used anywhere in the json file(s), by wrapping the variable name with "@".
+The variables can be used anywhere in the json file(s), by wrapping the variable name with `"@"`.
+The variable definition style can be changed with the next setting.
+
+#### options.variableRegex
+Type: `Object` with keys and values.
+Default value: `/@(\w+)@/g`
+
+This Regex is used to parse all string values in the JSON files to swap them for their counterpart
+in the `options.variable` object. By default is would look like `"some/@foo@/path"`.
 
 ### Usage Examples
 
