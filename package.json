@@ -10,6 +10,13 @@
         "url": "http://mathias-paumgarten.com"
     },
 
+    "contributors": [
+        {
+            "name": "Lior Chen",
+            "email": "liorchen@gmail.com"
+        }
+    ],
+
     "repository": {
         "type": "git",
         "url": "https://github.com/MathiasPaumgarten/grunt-json-bake.git"
