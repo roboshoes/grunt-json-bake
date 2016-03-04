@@ -190,7 +190,7 @@ module.exports = function( grunt ) {
 
             return value.replace( options.variableRegex, function( match, key ) {
 
-                if ( ! options.variables[ key ] ) {
+                if ( options.variables[ key ] === undefined ) {
                     grunt.log.warn( "No variable definition found for: " + key );
                     return "";
                 }

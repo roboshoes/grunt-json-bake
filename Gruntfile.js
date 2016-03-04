@@ -88,7 +88,8 @@ module.exports = function( grunt ) {
                 options: {
                     variables: {
                         folder: "folder",
-                        num: 1
+                        num: 1,
+                        empty: ""
                     }
                 },
 
@@ -101,7 +102,8 @@ module.exports = function( grunt ) {
                 options: {
                     variables: {
                         folder: "folder",
-                        num: 2
+                        num: 2,
+                        empty: "./"
                     }
                 },
 

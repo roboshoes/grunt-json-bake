@@ -1,7 +1,7 @@
 {
     "name": "grunt-json-bake",
     "description": "Baking multiple json files into one",
-    "version": "0.2.9",
+    "version": "0.2.10",
     "homepage": "https://github.com/MathiasPaumgarten/grunt-json-bake",
 
     "author": {
@@ -47,7 +47,7 @@
         "grunt-contrib-nodeunit": "^0.4.1",
         "grunt-contrib-watch": "~0.6.1",
         "grunt": "~0.4.5",
-        "mout": "~0.11.1"
+        "mout": "~0.12.0"
     },
 
     "peerDependencies": {

@@ -1,3 +1,3 @@
 {
-    "value": "{{@folder@/@num@.json}}"
+    "value": "{{@empty@@folder@/@num@.json}}"
 }
